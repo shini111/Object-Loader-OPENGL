@@ -1,0 +1,14 @@
+# Blender 4.2.1 LTS MTL File: 'casa2.blend'
+# www.blender.org
+
+newmtl Casa
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+Ps 0.000000
+Pc 0.000000
+Pcr 0.030000
+aniso 0.000000
+anisor 0.000000
+map_Kd Casa_BaseColor.png

@@ -105,16 +105,20 @@ int main(int argc, char** argv) {
 
 	Shader shader("texture.shader");
 
-	Object backpack = Object("Models/Backpack/backpack.obj", true, shader);
-	backpack.Translate(glm::vec3(0.0f, 0.0f, -5.0f));
-	Object livroAzul = Object("Models/LivroAzul/livroAzul.obj", true, shader);
-	Object street = Object("Models/Street/street.obj", false, shader);
+	Object med = Object("Models/Med/med.obj", false, shader);
+	med.Translate(glm::vec3(28.5f, 1.0f, 3.0f));
+	med.SetScale(glm::vec3(0.03f, 0.03f, 0.03f));
+	med.SetRotation(glm::vec3(0.0f,1.0f,0.0f), 1.5708);
 
-
+	Object hf = Object("Models/hl/source/stalkyard/hl.obj", true, shader);
+	hf.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
+	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
+	
+	
+	objects.push_back(med);
 	//objects.push_back(backpack);
-	//objects.push_back(livroAzul);
-	objects.push_back(street);
-
+	objects.push_back(hf);
 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);
 
@@ -138,6 +142,8 @@ int main(int argc, char** argv) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Bind();
+
+		hf.SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), deltaTime);
 
 		glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);

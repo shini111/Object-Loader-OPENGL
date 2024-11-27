@@ -1,2 +1,3 @@
 ﻿  3D SceneViewer.cpp
+C:\.dev\Object-Loader-OPENGL\SetupOpenGL\3D SceneViewer.cpp(111,45): warning C4305: 'argument': truncation from 'double' to 'float'
   SetupOpenGL.vcxproj -> C:\.dev\Object-Loader-OPENGL\x64\Debug\3D SceneViewer.exe
