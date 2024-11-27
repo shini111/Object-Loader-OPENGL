@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\XaviU\Downloads\3d-scene-viewer-main (1)\3d-scene-viewer-main\x64\Debug\3D SceneViewer.exe</FullPath>
+      <FullPath>C:\.dev\Object-Loader-OPENGL\x64\Debug\3D SceneViewer.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

@@ -1,26 +1,61 @@
 #pragma once
-#pragma once
+#include "Mesh.h"
+#include "Shader.h"
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <vector>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-class Object {
+#include <vector>
+#include <Assimp/Importer.hpp>
+#include <Assimp/scene.h>
+#include <Assimp/postprocess.h>
+
+class Object
+{
 public:
-	Object(const char* filename, GLuint shaderProgram);
-	void Draw(GLuint viewLocation, GLuint projectionLocation, glm::mat4 view, glm::mat4 projection, glm::mat4 translatevalue);
+	Object(std::string const& path, bool flipTextures, Shader& shader);
+	void AddTexture(const char* texturePath);
+	void Draw(Shader& shader);
+	void Translate(glm::vec3 newPos);
+	void AddToPosition(glm::vec3 vectorToAdd);
+	void SetScale(glm::vec3 newScale);
+	void SetRotation(glm::vec3 RotateAxis, float rotationValue);
 
 private:
-	std::vector<glm::vec4> vertices;
-	std::vector<glm::vec3> normals;
-	std::vector<GLushort> elements;
-	std::vector<glm::vec2> texCoords;
 
-	GLuint vao, vbo, ebo, texCoordVBO;
-	GLuint shaderProgram;
-	GLuint texture;
-	GLuint modelLocation;
+	Shader& shaderptr;
+	std::vector<Mesh> meshes;
+	std::string directory;
 
-	void initBuffers();
-	void loadTextures(const char* textureFile);
-	void load_obj(const char* filename);
+	void loadModel(std::string path);
+	void processNode(aiNode* ainode, const aiScene* aiscene);
+	Mesh processMesh(aiMesh* aimesh, const aiScene* aiscene);
+	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
+		std::string typeName);
+	unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
+
+	void ResetMatrix() { modelMatrix = glm::mat4(1.0f); }
+
+
+	std::vector<Texture> textures_loaded;
+
+	std::string modelName;
+
+	GLint positionAttribute;
+	GLint textureCoordAttribute;
+	GLint colorAttribute;
+
+	std::vector<GLuint> texture;
+	std::vector <GLuint> textureLocation;
+
+	glm::vec3 Position;
+	glm::vec3 Scale;
+	glm::vec3 RotationAxis;
+	float RotationValue;
+
+	GLuint modelAttribute;
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
 };

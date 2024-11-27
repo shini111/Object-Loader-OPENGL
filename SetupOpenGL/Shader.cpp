@@ -1,11 +1,8 @@
-#include <glad/glad.h>
-
 #include "Shader.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <unordered_map>
-#include <glm/gtc/type_ptr.hpp>
+
+
+// Definition of the static member
+unsigned int Shader::program = 0;
 
 Shader::Shader(const std::string& filepath)
 	: m_FilePath(filepath), m_RendererID(0) {
@@ -15,6 +12,46 @@ Shader::Shader(const std::string& filepath)
 
 Shader::~Shader() {
 	glDeleteProgram(m_RendererID);
+}
+
+void Shader::Bind() {
+	glUseProgram(program);
+}
+
+void Shader::Unbind() {
+	glUseProgram(0);
+}
+
+void Shader::SetUniform1i(const std::string& name, int value) {
+	glUniform1i(GetUniformLocation(name), value);
+}
+
+void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2) {
+	glUniform3f(GetUniformLocation(name), v0, v1, v2);
+}
+
+void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
+	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+}
+
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+GLint Shader::GetAttribLocation(const std::string& name) const
+{
+	return glGetAttribLocation(m_RendererID, name.c_str());
+}
+
+GLuint Shader::GetUniformLocation(const std::string& name) const {
+	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+		return m_UniformLocationCache[name];
+
+	GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+	if (location == -1)
+		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
+	m_UniformLocationCache[name] = location;
+	return location;
 }
 
 ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
@@ -64,7 +101,7 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 }
 
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
-	unsigned int program = glCreateProgram();
+	program = glCreateProgram();
 	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
@@ -77,40 +114,4 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 	glDeleteShader(fs);
 
 	return program;
-}
-
-void Shader::Bind() const {
-	glUseProgram(m_RendererID);
-}
-
-void Shader::Unbind() const {
-	glUseProgram(0);
-}
-
-void Shader::SetUniform1i(const std::string& name, int value) {
-	glUniform1i(GetUniformLocation(name), value);
-}
-
-void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2) {
-	glUniform3f(GetUniformLocation(name), v0, v1, v2);
-}
-
-void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
-	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
-}
-
-void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
-	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
-}
-
-int Shader::GetUniformLocation(const std::string& name) const {
-	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
-		return m_UniformLocationCache[name];
-
-	int location = glGetUniformLocation(m_RendererID, name.c_str());
-	if (location == -1)
-		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
-
-	m_UniformLocationCache[name] = location;
-	return location;
 }
