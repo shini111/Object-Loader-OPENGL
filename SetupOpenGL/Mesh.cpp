@@ -10,7 +10,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 	this->textures = textures;
 	setupMesh();
 }
-
+	
 void Mesh::Draw(Shader& shader)
 {
 	shaderptr = shader;

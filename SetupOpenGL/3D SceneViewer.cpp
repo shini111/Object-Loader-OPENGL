@@ -40,6 +40,7 @@ static void processKeyboard(float deltaTime) {
 
 	cameraPos.y = cameraHeight;
 }
+
 static void processMouse(SDL_Event ev, float deltaTime) {
 	if (ev.type == SDL_MOUSEMOTION) {
 		float xoffset = static_cast<float>(ev.motion.xrel);
@@ -63,7 +64,7 @@ static void processMouse(SDL_Event ev, float deltaTime) {
 		front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
 		cameraFront = glm::normalize(front);
 
-		std::cout << "Yaw: " << yaw << ", Pitch: " << pitch << std::endl;
+		//std::cout << "Yaw: " << yaw << ", Pitch: " << pitch << std::endl;
 	}
 
 	if (ev.type == SDL_MOUSEWHEEL) {
@@ -115,7 +116,8 @@ int main(int argc, char** argv) {
 	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
 	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
 	
-	
+	//Object backpack = Object("Models/Backpack/backpack.obj", true, shader);
+
 	objects.push_back(med);
 	//objects.push_back(backpack);
 	objects.push_back(hf);
@@ -138,7 +140,6 @@ int main(int argc, char** argv) {
 		}
 		processKeyboard(deltaTime);
 
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Bind();
@@ -156,10 +157,15 @@ int main(int argc, char** argv) {
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		shader.SetUniformMat4f("model", model);
 
+
+
 		for (Object object : objects)
 		{
 			object.Draw(shader);
 		}
+
+		shader.Bind();
+
 
 		SDL_GL_SwapWindow(window);
 	}

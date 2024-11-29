@@ -50,7 +50,6 @@ void Object::AddTexture(const char* texturePath)
 	}
 	stbi_image_free(data);
 
-	//shaderptr.Bind();
 	std::string TextureAttribute = std::format("texture_diffuse{0}", texture.size() - 1);
 
 	textureLocation.push_back(shaderptr.GetUniformLocation(TextureAttribute));
