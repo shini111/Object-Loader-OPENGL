@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 	hf.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
 	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
-		
+	
 	//Object backpack = Object("Models/Backpack/backpack.obj", true, shader);
 
 	objects.push_back(med);
@@ -156,6 +156,7 @@ int main(int argc, char** argv) {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		shader.SetUniformMat4f("model", model);
+
 
 
 		for (Object object : objects)
