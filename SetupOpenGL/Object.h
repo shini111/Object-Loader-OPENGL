@@ -1,61 +1,70 @@
-#pragma once
-#include "Mesh.h"
-#include "Shader.h"
+#ifndef OBJECT_H
+#define OBJECT_H
 
-#include <glad/glad.h>
+#include <vector>
+#include <string>
+#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <vector>
-#include <Assimp/Importer.hpp>
-#include <Assimp/scene.h>
-#include <Assimp/postprocess.h>
+#include "Mesh.h"
+#include "Shader.h"
+#include "stb_image.h"
 
-class Object
-{
+class Object {
 public:
-	Object(std::string const& path, bool flipTextures, Shader& shader);
-	void AddTexture(const char* texturePath);
-	void Draw(Shader& shader);
-	void Translate(glm::vec3 newPos);
-	void AddToPosition(glm::vec3 vectorToAdd);
-	void SetScale(glm::vec3 newScale);
-	void SetRotation(glm::vec3 RotateAxis, float rotationValue);
+    // Constructor
+    Object(const std::string& path, bool flipTextures, Shader& shader);
+
+    // Public Methods
+    void Draw(Shader& shader);
+    void AddTexture(const char* texturePath);
+
+    // Transformations
+    void Translate(glm::vec3 newPos);
+    void AddToPosition(glm::vec3 vectorToAdd);
+    void SetScale(glm::vec3 newScale);
+    void SetRotation(glm::vec3 _RotateAxis, float _rotationValue);
+
+    // Texture Handling
+    unsigned int getTextureID(size_t index = 0) const { return (index < texture.size()) ? texture[index] : 0; }
+    size_t getTextureCount() const { return texture.size(); }
+
+    // Debugging
+    bool isLoadedSuccessfully() const { return loadedSuccessfully; }
 
 private:
+    // Model Data
+    std::vector<Mesh> meshes;
+    std::vector<unsigned int> texture;
+    std::vector<int> textureLocation;
+    std::string directory;
 
-	Shader& shaderptr;
-	std::vector<Mesh> meshes;
-	std::string directory;
+    // Shader
+    Shader& shaderptr;
 
-	void loadModel(std::string path);
-	void processNode(aiNode* ainode, const aiScene* aiscene);
-	Mesh processMesh(aiMesh* aimesh, const aiScene* aiscene);
-	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-		std::string typeName);
-	unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
+    // Transformation Data
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    glm::vec3 Position;
+    glm::vec3 Scale;
+    glm::vec3 RotationAxis;
+    float RotationValue = 0.0f;
 
-	void ResetMatrix() { modelMatrix = glm::mat4(1.0f); }
+    // OBJ Loader
+    void loadModel(std::string path);
+    void processMeshData(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    void parseOBJFile(const std::string& path);
 
+    // Texture Loading
+    unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
-	std::vector<Texture> textures_loaded;
+    // Load Status
+    bool loadedSuccessfully = false;
 
-	std::string modelName;
-
-	GLint positionAttribute;
-	GLint textureCoordAttribute;
-	GLint colorAttribute;
-
-	std::vector<GLuint> texture;
-	std::vector <GLuint> textureLocation;
-
-	glm::vec3 Position;
-	glm::vec3 Scale;
-	glm::vec3 RotationAxis;
-	float RotationValue;
-
-	GLuint modelAttribute;
-	glm::mat4 modelMatrix = glm::mat4(1.0f);
-
+    void loadMaterial(std::string path);
+    std::vector<Texture> getMaterialTextures(std::string materialName);
+    unsigned int TextureFromFile(const char* path, const std::string& directory)
 };
+
+#endif
