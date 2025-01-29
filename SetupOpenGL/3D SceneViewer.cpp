@@ -106,12 +106,14 @@ int main(int argc, char** argv) {
 
 	Shader shader("texture.shader");
 
-	Object med = Object("Models/Med/med.obj", false, shader);
+	Object med = Object("Models/Med/med.obj", shader);
 	med.Translate(glm::vec3(28.5f, 1.0f, 3.0f));
 	med.SetScale(glm::vec3(0.03f, 0.03f, 0.03f));
 	med.SetRotation(glm::vec3(0.0f,1.0f,0.0f), 1.5708);
 
-	Object hf = Object("Models/hl/source/stalkyard/hl.obj", true, shader);
+
+	std::string hfpath = "Models/hl/source/stalkyard/hl.obj";
+	Object hf = Object(hfpath, shader);
 	hf.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
 	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
@@ -127,6 +129,8 @@ int main(int argc, char** argv) {
 	bool running = true;
 	SDL_Event event;
 	Uint32 lastTime = SDL_GetTicks(), currentTime;
+
+	glClearColor(1.f, 0.f, 0.f, 1.f);
 
 	while (running) {
 		currentTime = SDL_GetTicks();
@@ -163,8 +167,6 @@ int main(int argc, char** argv) {
 		{
 			object.Draw(shader);
 		}
-
-		shader.Bind();
 
 
 		SDL_GL_SwapWindow(window);

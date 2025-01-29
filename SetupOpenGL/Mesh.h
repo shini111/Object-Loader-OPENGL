@@ -1,40 +1,34 @@
-#pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#ifndef MESH_H
+#define MESH_H
+
 #include <vector>
-#include <string>
 #include "Shader.h"
+#include <glm/glm.hpp>
 
 struct Vertex {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
+    glm::vec3 Position;
+    glm::vec3 Normal;
+    glm::vec2 TexCoords;
 };
 
 struct Texture {
-	unsigned int id;
-	std::string path;
-	std::string type;
+    unsigned int id;
+    std::string type;
+    std::string path;
 };
 
-class Mesh
-{
+class Mesh {
 public:
-	//Shader Reference
-	Shader& shaderptr;
-	// mesh data
-	std::vector<Vertex>       vertices;
-	std::vector<unsigned int> indices;
-	std::vector<Texture>      textures;
+    Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, std::vector<Texture>& textures, Shader& shader);
+    void Draw(Shader& shader);  // Render the mesh using OpenGL
 
-
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Shader& shader);
-	void Draw(Shader& shader);
 private:
-	//  render data
-	unsigned int VAO, VBO, EBO;
+    unsigned int VAO, VBO, EBO;
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
 
-	void setupMesh();
+    void setupMesh();  // Setup OpenGL buffers and arrays
 };
 
+#endif

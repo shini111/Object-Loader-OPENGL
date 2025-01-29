@@ -8,6 +8,15 @@ Shader::Shader(const std::string& filepath)
 	: m_FilePath(filepath), m_RendererID(0) {
 	ShaderProgramSource source = ParseShader(m_FilePath);
 	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+
+	// Inside the Shader class constructor
+	GLuint modelLoc = glGetUniformLocation(m_RendererID, "model");
+	GLuint viewLoc = glGetUniformLocation(m_RendererID, "view");
+	GLuint projectionLoc = glGetUniformLocation(m_RendererID, "projection");
+
+	if (modelLoc == -1 || viewLoc == -1 || projectionLoc == -1) {
+		std::cout << "Error: One or more uniforms could not be found in the shader!" << std::endl;
+	}
 }
 
 Shader::~Shader() {
@@ -15,7 +24,7 @@ Shader::~Shader() {
 }
 
 void Shader::Bind() {
-	glUseProgram(program);
+	glUseProgram(m_RendererID);
 }
 
 void Shader::Unbind() {
@@ -101,17 +110,34 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 }
 
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
-	program = glCreateProgram();
+	m_RendererID = glCreateProgram();
 	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program);
-	glValidateProgram(program);
+	glAttachShader(m_RendererID, vs);
+	glAttachShader(m_RendererID, fs);
+	glLinkProgram(m_RendererID);
+
+	// Check for linking errors
+	int success;
+	char infoLog[512];
+	glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	}
+
+	glValidateProgram(m_RendererID);
+
+	// Check for validation errors
+	glGetProgramiv(m_RendererID, GL_VALIDATE_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::VALIDATION_FAILED\n" << infoLog << std::endl;
+	}
 
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
-	return program;
+	return m_RendererID;
 }

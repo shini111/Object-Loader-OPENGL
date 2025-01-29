@@ -18,10 +18,14 @@ struct ShaderProgramSource {
 
 class Shader {
 public:
+	Shader()
+	{
+
+	};
 	Shader(const std::string& filepath);
 	~Shader();
 
-	static void Bind();
+	void Bind();
 	static void Unbind();
 
 	void SetUniform1i(const std::string& name, int value);
