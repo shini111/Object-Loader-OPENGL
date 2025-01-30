@@ -105,24 +105,27 @@ int main(int argc, char** argv) {
 	std::vector<Object> objects;
 
 	Shader shader("texture.shader");
+	
+	Object alley = Object("Models/Alley/Enviorment.obj",false, shader);
 
-	Object med = Object("Models/Med/med.obj", shader);
-	med.Translate(glm::vec3(28.5f, 1.0f, 3.0f));
-	med.SetScale(glm::vec3(0.03f, 0.03f, 0.03f));
-	med.SetRotation(glm::vec3(0.0f,-1.0f,0.0f), 1.5708);
+	Object street = Object("Models/Street/street.obj",false, shader);
+	street.Translate(glm::vec3(0.f, 0.f, 0.f));
 
-	/*
-	std::string hfpath = "Models/hl/source/stalkyard/hft.obj";
-	Object hf = Object(hfpath, shader);
-	hf.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
-	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
-	*/
-	Object backpack = Object("Models/Backpack/backpack.obj", shader);
+	Object grass = Object("Models/Grass/Gras.obj",false, shader);
+	grass.Translate(glm::vec3(5.31f, -1.5f, -1.f));
 
-	objects.push_back(med);
-	objects.push_back(backpack);
-	//objects.push_back(hf);
+	Object house = Object("Models/Casa/casat.obj",false, shader);
+	house.Translate(glm::vec3(0.f, 0.f, 5.f));
+
+	Object dino = Object("Models/Dino/chart.obj",false, shader);
+	dino.Translate(glm::vec3(0.f, 0.45f, 0.f));
+	dino.SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+	objects.push_back(alley);
+	objects.push_back(house);
+	objects.push_back(dino);
+	objects.push_back(grass);
+	objects.push_back(street);
 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);
 

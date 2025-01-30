@@ -11,10 +11,12 @@
 
 class Object {
 public:
-    Object(const std::string& path, Shader& shader);
+    Object(const std::string& path,bool flip, Shader& shader);
 
     void loadModel(const std::string& path);
     void Draw(Shader& shader);
+
+    bool toFlip = false;
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     void Translate(glm::vec3 newPos);

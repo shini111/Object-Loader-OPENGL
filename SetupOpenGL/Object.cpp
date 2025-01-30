@@ -2,7 +2,7 @@
 #include "OBJLoader.h"
 #include <iostream>
 
-Object::Object(const std::string& path, Shader& shader) : shaderptr(shader)
+Object::Object(const std::string& path,bool flip, Shader& shader) : shaderptr(shader), toFlip(flip)
 {
     loadModel(path);
 }
@@ -100,7 +100,7 @@ unsigned int Object::LoadTexture(const std::string& path)
 
     // Load image data
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(toFlip);
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     //std::cout << stbi_failure_reason() << std::endl;
     if (data)
