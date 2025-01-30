@@ -86,8 +86,8 @@ int main(int argc, char** argv) {
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	float screenWidth = 1920;
-	float screenHeight = 1080;
+	float screenWidth = 1920/2;
+	float screenHeight = 1080/2;
 
 	SDL_Window* window = SDL_CreateWindow("3D Scene Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, static_cast<int>(screenWidth), static_cast<int>(screenHeight), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	SDL_GLContext context = SDL_GL_CreateContext(window);
@@ -109,20 +109,20 @@ int main(int argc, char** argv) {
 	Object med = Object("Models/Med/med.obj", shader);
 	med.Translate(glm::vec3(28.5f, 1.0f, 3.0f));
 	med.SetScale(glm::vec3(0.03f, 0.03f, 0.03f));
-	med.SetRotation(glm::vec3(0.0f,1.0f,0.0f), 1.5708);
+	med.SetRotation(glm::vec3(0.0f,-1.0f,0.0f), 1.5708);
 
-
-	std::string hfpath = "Models/hl/source/stalkyard/hl.obj";
+	/*
+	std::string hfpath = "Models/hl/source/stalkyard/hft.obj";
 	Object hf = Object(hfpath, shader);
 	hf.SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
 	hf.SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
 	hf.Translate(glm::vec3(0.0f, 40.0f, 200.f));
-	
-	//Object backpack = Object("Models/Backpack/backpack.obj", true, shader);
+	*/
+	Object backpack = Object("Models/Backpack/backpack.obj", shader);
 
 	objects.push_back(med);
-	//objects.push_back(backpack);
-	objects.push_back(hf);
+	objects.push_back(backpack);
+	//objects.push_back(hf);
 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 	SDL_Event event;
 	Uint32 lastTime = SDL_GetTicks(), currentTime;
 
-	glClearColor(1.f, 0.f, 0.f, 1.f);
+	glClearColor(0.68f, 0.85f, 0.90f, 1.0f); // Light steel blue
 
 	while (running) {
 		currentTime = SDL_GetTicks();
@@ -148,7 +148,16 @@ int main(int argc, char** argv) {
 
 		shader.Bind();
 
-		hf.SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), deltaTime);
+		// Inside the Shader class constructor
+		GLuint modelLoc = glGetUniformLocation(shader.GetRendererID(), "model");
+		GLuint viewLoc = glGetUniformLocation(shader.GetRendererID(), "view");
+		GLuint projectionLoc = glGetUniformLocation(shader.GetRendererID(), "projection");
+
+		if (modelLoc == -1 || viewLoc == -1 || projectionLoc == -1) {
+			std::cout << "Error: One or more uniforms could not be found in the shader!" << std::endl;
+		}
+
+		//hf.SetRotation(glm::vec3(0.0f, 1.0f, 0.0f), deltaTime);
 
 		glm::mat4 projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -161,13 +170,11 @@ int main(int argc, char** argv) {
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		shader.SetUniformMat4f("model", model);
 
-
-
 		for (Object object : objects)
 		{
 			object.Draw(shader);
 		}
-
+		shader.Bind();
 
 		SDL_GL_SwapWindow(window);
 	}

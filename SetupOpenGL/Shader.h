@@ -41,10 +41,10 @@ public:
 
 private:
 	static unsigned int program;
-	unsigned int m_RendererID;
+	unsigned int m_RendererID = 0;
 	std::string m_FilePath;
 	mutable std::unordered_map<std::string, int> m_UniformLocationCache;
 	ShaderProgramSource ParseShader(const std::string& filepath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
-	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
+	void CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 };

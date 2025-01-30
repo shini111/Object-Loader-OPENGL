@@ -5,9 +5,9 @@
 unsigned int Shader::program = 0;
 
 Shader::Shader(const std::string& filepath)
-	: m_FilePath(filepath), m_RendererID(0) {
+	: m_FilePath(filepath){
 	ShaderProgramSource source = ParseShader(m_FilePath);
-	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+	CreateShader(source.VertexSource, source.FragmentSource);
 
 	// Inside the Shader class constructor
 	GLuint modelLoc = glGetUniformLocation(m_RendererID, "model");
@@ -20,10 +20,15 @@ Shader::Shader(const std::string& filepath)
 }
 
 Shader::~Shader() {
-	glDeleteProgram(m_RendererID);
+	//glDeleteProgram(m_RendererID);
+
 }
 
 void Shader::Bind() {
+
+	if (!glIsProgram(m_RendererID)) {
+		std::cerr << "Error: Shader program " << m_RendererID << " does not exist!" << std::endl;
+	}
 	glUseProgram(m_RendererID);
 }
 
@@ -53,12 +58,16 @@ GLint Shader::GetAttribLocation(const std::string& name) const
 }
 
 GLuint Shader::GetUniformLocation(const std::string& name) const {
-	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
-		return m_UniformLocationCache[name];
+	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) {
 
-	GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
+		return m_UniformLocationCache[name];
+	}
+
+ 	GLuint location = glGetUniformLocation(m_RendererID, name.c_str());
 	if (location == -1)
+	{
 		std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
+	}
 	m_UniformLocationCache[name] = location;
 	return location;
 }
@@ -109,35 +118,48 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 	return id;
 }
 
-unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
+void Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
 	m_RendererID = glCreateProgram();
+	if (m_RendererID == 0) {
+		std::cerr << "Error: Failed to create shader program!" << std::endl;
+		return;
+	}
+
 	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+	if (vs == 0 || fs == 0) {
+		std::cerr << "Error: Shader compilation failed, not linking program!" << std::endl;
+		return;
+	}
 
 	glAttachShader(m_RendererID, vs);
 	glAttachShader(m_RendererID, fs);
 	glLinkProgram(m_RendererID);
 
-	// Check for linking errors
 	int success;
-	char infoLog[512];
 	glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
 	if (!success) {
+		char infoLog[512];
 		glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		glDeleteProgram(m_RendererID);  // Delete invalid program
+		m_RendererID = 0;               // Reset ID to invalid
+		return;
 	}
 
 	glValidateProgram(m_RendererID);
-
-	// Check for validation errors
 	glGetProgramiv(m_RendererID, GL_VALIDATE_STATUS, &success);
 	if (!success) {
+		char infoLog[512];
 		glGetProgramInfoLog(m_RendererID, 512, nullptr, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::VALIDATION_FAILED\n" << infoLog << std::endl;
+		std::cerr << "ERROR::SHADER::PROGRAM::VALIDATION_FAILED\n" << infoLog << std::endl;
+		glDeleteProgram(m_RendererID);
+		m_RendererID = 0;
+		return;
 	}
 
 	glDeleteShader(vs);
 	glDeleteShader(fs);
-
-	return m_RendererID;
 }
+

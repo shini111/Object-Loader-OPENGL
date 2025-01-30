@@ -1,18 +1,19 @@
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\vc143.pdb
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\vc143.idb
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\textureloader.obj
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\stb_image.obj
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\shader.obj
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\object.obj
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.obj
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\mesh.obj
-c:\.dev\object-loader-opengl\x64\debug\3d sceneviewer.exe
-c:\.dev\object-loader-opengl\x64\debug\3d sceneviewer.pdb
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.ilk
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.command.1.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.items.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.write.1.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.command.1.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.read.1.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.secondary.1.tlog
-c:\.dev\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.write.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\vc143.pdb
+e:\object-loader-opengl\setupopengl\x64\debug\vc143.idb
+e:\object-loader-opengl\setupopengl\x64\debug\glad.obj
+e:\object-loader-opengl\setupopengl\x64\debug\stb_image.obj
+e:\object-loader-opengl\setupopengl\x64\debug\shader.obj
+e:\object-loader-opengl\setupopengl\x64\debug\objloader.obj
+e:\object-loader-opengl\setupopengl\x64\debug\object.obj
+e:\object-loader-opengl\setupopengl\x64\debug\mesh.obj
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.obj
+e:\object-loader-opengl\x64\debug\3d sceneviewer.exe
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.ilk
+e:\object-loader-opengl\x64\debug\3d sceneviewer.pdb
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.command.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.items.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.read.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\cl.write.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.command.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.read.1.tlog
+e:\object-loader-opengl\setupopengl\x64\debug\3d sceneviewer.tlog\link.write.1.tlog

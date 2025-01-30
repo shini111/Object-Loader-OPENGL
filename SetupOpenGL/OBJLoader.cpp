@@ -1,21 +1,25 @@
-#include "OBJLoader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <unordered_map>
+#include <glm/glm.hpp>
+#include "OBJLoader.h"
 
-bool LoadOBJ(const std::string& path, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, std::vector<Texture>& textures)
-{
+std::string modelPath = "Models/Med/";
+
+bool LoadOBJ(const std::string& path, OBJData& objData) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open OBJ file: " << path << std::endl;
         return false;
     }
 
-    std::vector<glm::vec3> temp_vertices;
-    std::vector<glm::vec2> temp_texCoords;
-    std::vector<glm::vec3> temp_normals;
-
     std::string line;
+    ObjectInfo currentObject;
+    std::string currentMaterial;
+    bool hasObject = false;
+
     while (std::getline(file, line)) {
         std::istringstream ss(line);
         std::string prefix;
@@ -24,79 +28,118 @@ bool LoadOBJ(const std::string& path, std::vector<Vertex>& vertices, std::vector
         if (prefix == "v") {
             glm::vec3 vertex;
             ss >> vertex.x >> vertex.y >> vertex.z;
-            temp_vertices.push_back(vertex);
+            objData.vertices.push_back(vertex);
         }
         else if (prefix == "vt") {
             glm::vec2 texCoord;
             ss >> texCoord.x >> texCoord.y;
-            temp_texCoords.push_back(texCoord);
+            texCoord.y = 1.0f - texCoord.y; // Flip V for OpenGL
+            objData.texCoords.push_back(texCoord);
         }
         else if (prefix == "vn") {
             glm::vec3 normal;
             ss >> normal.x >> normal.y >> normal.z;
-            temp_normals.push_back(normal);
+            objData.normals.push_back(normal);
         }
         else if (prefix == "f") {
-            std::string vertex1, vertex2, vertex3;
-            unsigned int vIndex[3], tIndex[3], nIndex[3];
-            char slash;
+            Face face;
+            std::string vertexData;
+            while (ss >> vertexData) {
+                std::istringstream vss(vertexData);
+                unsigned int vIndex, tIndex = 0, nIndex = 0;
+                char slash;
 
-            ss >> vertex1 >> vertex2 >> vertex3;
-            // Parse the face data
-            for (int i = 0; i < 3; i++) {
-                std::istringstream ss_v(vertex1);
-                ss_v >> vIndex[i] >> slash >> tIndex[i] >> slash >> nIndex[i];
-                indices.push_back(vIndex[i] - 1); // OBJ indices are 1-based
+                vss >> vIndex;
+                if (vss.peek() == '/') {
+                    vss.get();
+                    if (vss.peek() != '/') vss >> tIndex;
+                    if (vss.peek() == '/') {
+                        vss.get();
+                        vss >> nIndex;
+                    }
+                }
+
+                face.vertexIndices.push_back(vIndex - 1);
+                if (tIndex > 0) face.texCoordIndices.push_back(tIndex - 1);
+                if (nIndex > 0) face.normalIndices.push_back(nIndex - 1);
             }
+
+            if (!hasObject) {
+                currentObject.name = "default";
+                hasObject = true;
+            }
+
+            currentObject.faces.push_back(face);
+        }
+        else if (prefix == "o") {
+            if (hasObject) objData.objects.push_back(currentObject);
+            currentObject = ObjectInfo();
+            ss >> currentObject.name;
+            hasObject = true;
+        }
+        else if (prefix == "g") {
+            if (hasObject) objData.objects.push_back(currentObject);
+            currentObject = ObjectInfo();
+            ss >> currentObject.name;
+            hasObject = true;
+        }
+        else if (prefix == "usemtl") {
+            ss >> currentMaterial;
+            currentObject.material = currentMaterial;
+        }
+        else if (prefix == "mtllib") {
+            std::string mtlFilename;
+            ss >> mtlFilename;
+
+            // Extract directory from OBJ file path
+            std::string objDirectory = path.substr(0, path.find_last_of("/\\") + 1);
+
+            // Construct the full path to the MTL file
+            std::string mtlFilePath = objDirectory + mtlFilename;
+            //std::cout << mtlFilePath << std::endl;
+            std::ifstream mtlStream(mtlFilePath);
+            if (!mtlStream.is_open()) {
+                std::cerr << "Failed to open MTL file: " << mtlFilePath << std::endl;
+                return false;
+            }
+
+            std::string mtlLine;
+            Material currentMaterial;
+            bool hasMaterial = false;
+
+            while (std::getline(mtlStream, mtlLine)) {
+                std::istringstream mss(mtlLine);
+                std::string mtlPrefix;
+                mss >> mtlPrefix;
+
+                if (mtlPrefix == "newmtl") {
+                    if (hasMaterial) objData.materials[currentMaterial.name] = currentMaterial;
+                    mss >> currentMaterial.name;
+                   // std::cout << "Texture name: " << currentMaterial.name << std::endl;
+                    hasMaterial = true;
+                }
+                else if (mtlPrefix == "Ka") mss >> currentMaterial.ambient.r >> currentMaterial.ambient.g >> currentMaterial.ambient.b;
+                else if (mtlPrefix == "Kd") mss >> currentMaterial.diffuse.r >> currentMaterial.diffuse.g >> currentMaterial.diffuse.b;
+                else if (mtlPrefix == "Ks") mss >> currentMaterial.specular.r >> currentMaterial.specular.g >> currentMaterial.specular.b;
+                else if (mtlPrefix == "Ns") mss >> currentMaterial.shininess;
+                else if (mtlPrefix == "map_Kd")
+                {
+                    mss >> currentMaterial.texturePath;
+
+                    // Prepend the directory of the OBJ file to the texture path
+                    if (!currentMaterial.texturePath.empty()) {
+                        currentMaterial.texturePath = objDirectory + currentMaterial.texturePath;
+                    }
+
+                    // Debug output to verify the full texture path
+                    std::cout << "Full texture path: " << currentMaterial.texturePath << std::endl;
+                }
+            }
+
+            if (hasMaterial) objData.materials[currentMaterial.name] = currentMaterial;
         }
     }
 
-    // Now that we have all vertices, normals, and texture coords, we need to build the final vertices.
-    for (unsigned int i = 0; i < indices.size(); i++) {
-        Vertex vertex;
-        unsigned int vertexIndex = indices[i];
-        vertex.Position = temp_vertices[vertexIndex];
-
-        if (vertexIndex < temp_texCoords.size()) {
-            vertex.TexCoords = temp_texCoords[vertexIndex];
-        }
-        else {
-            vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-        }
-
-        if (vertexIndex < temp_normals.size()) {
-            vertex.Normal = temp_normals[vertexIndex];
-        }
-        else {
-            vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
-        }
-
-        vertices.push_back(vertex);
-    }
-
+    if (hasObject) objData.objects.push_back(currentObject);
     return true;
-}
-
-// Function to load texture from file
-unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma)
-{
-    std::string filename = directory + '/' + std::string(path);
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
-
-    if (data) {
-        GLenum format = (nrChannels == 1) ? GL_RED : (nrChannels == 3) ? GL_RGB : GL_RGBA;
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
-    }
-    else {
-        std::cerr << "Failed to load texture: " << filename << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
 }
