@@ -8,7 +8,7 @@ Object::Object(const std::string& path,bool flip, Shader& shader) : shaderptr(sh
 }
 
 void Object::loadModel(const std::string& path) {
-    OBJData objData;
+   OBJData objData;
 
     if (!LoadOBJ(path, objData)) {
         std::cerr << "Failed to load OBJ file: " << path << std::endl;

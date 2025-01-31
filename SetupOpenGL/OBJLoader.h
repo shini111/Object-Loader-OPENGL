@@ -8,9 +8,6 @@
 #include <glm/glm.hpp>
 #include "Mesh.h"
 
-class OBJLoader 
-{
-public:
     // Structure representing a face (polygon)
     struct Face {
         std::vector<unsigned int> vertexIndices;
@@ -47,6 +44,5 @@ public:
     // Function to load an OBJ file and parse its contents
     bool LoadOBJ(const std::string& path, OBJData& objData);
 
-};
 
 
