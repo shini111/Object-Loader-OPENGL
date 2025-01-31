@@ -8,7 +8,7 @@
 
 std::string modelPath = "Models/Med/";
 
-bool LoadOBJ(const std::string& path, OBJData& objData) {
+bool OBJLoader::LoadOBJ(const std::string& path, OBJData& objData) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "Failed to open OBJ file: " << path << std::endl;
