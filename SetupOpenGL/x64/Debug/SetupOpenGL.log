@@ -1,5 +1,1 @@
-﻿  Object.cpp
-  OBJLoader.cpp
-E:\Object-Loader-OPENGL\SetupOpenGL\OBJLoader.cpp(50,22): warning C4101: 'slash': unreferenced local variable
-  Generating Code...
-  SetupOpenGL.vcxproj -> E:\Object-Loader-OPENGL\x64\Debug\3D SceneViewer.exe
+﻿  SetupOpenGL.vcxproj -> C:\Users\XaviU\Desktop\CGP1\Object-Loader-OPENGL\x64\Debug\3D SceneViewer.exe
